@@ -1,40 +1,43 @@
-# The 99.83% Trap: When AI Accuracy Hides Credit Card Fraud
+# 99.83% Accurate. Zero Fraud Caught. Here's the Catch.
 
-*What 284,807 transactions reveal about the danger of trusting accuracy alone.*
+*How 284,807 credit card transactions exposed the hidden danger of trusting machine learning accuracy alone.*
 
-Imagine a fraud detector boasting **99.83% accuracy**. Impressive? Not necessarily. In the dataset I studied, a system could achieve that score simply by labeling **every transaction legitimate**—and catching **zero fraud**.
+Imagine a fraud detector that boasts **99.83% accuracy**. Impressive, right?
 
-That is the 99.83% trap: a strong-looking number can hide a serious failure.
+Not necessarily. In the dataset I studied, a system could reach that number simply by declaring **every transaction legitimate**. It would miss every single fraud case.
 
-![Fraud versus legitimate transactions](../images/fraud_distribution.svg)
+That's the accuracy trap: being right almost all the time can still mean failing at the one job that matters.
 
 ## How much fraud was hiding in the data?
 
-Of **284,807 credit card transactions**, only **492 (0.173%)** were fraudulent—roughly one in every 579 purchases.
+I examined **284,807 credit card transactions**. Just **492—0.173%—were fraudulent**. That's roughly one fraudulent transaction in every 579.
 
-My first step was to explore the data. I found **1,081 exact duplicate records**, which I removed, and no missing values. The median transaction amount was **9.25 for fraud versus 22.00 for legitimate purchases** (the dataset does not specify a currency). Transaction amount alone cannot reliably distinguish fraud.
+There were no missing values, although I removed **1,081 exact duplicate records** before training. Interestingly, fraudulent transactions had a lower median amount (**9.25**) than legitimate transactions (**22.00**), in unspecified currency units. Amount alone, however, is not enough to identify fraud.
 
-## Could machine learning do better?
+![Fraud distribution](../images/fraud_distribution.svg)
 
-I compared two models on **56,746 transactions excluded from their training**, including 95 fraud cases.
+*Figure 1. Only 0.173% of transactions were fraudulent. Source: ULB/Worldline dataset.*
 
-| Model | Fraud cases found | Genuine alerts | False alerts |
-|---|---:|---:|---:|
-| Logistic Regression | 83 of 95 (87.4%) | 5.6% | 1,389 |
-| Random Forest | 69 of 95 (72.6%) | 97.2% | 2 |
+## Could machine learning identify the fraud?
 
-The contrast was striking. Logistic Regression caught **14 more fraudulent transactions**, but also raised **1,387 more false alarms**. Random Forest produced far fewer mistaken alerts, yet missed **26 fraud cases**.
+I tested **Logistic Regression** and **Random Forest** using **56,746 transactions kept out of model training**, including 95 confirmed fraud cases.
 
-![Model performance comparison](../images/model_comparison.svg)
+Logistic Regression identified **83 of the 95 frauds (87.4%)**, but generated **1,389 false alerts**. Random Forest caught **69 frauds (72.6%)**, with just **2 false alerts**.
 
-## What about one new transaction?
+So which performed better? It depends on what matters most: catching more fraud or avoiding unnecessary investigations. There is no single winner without considering the cost of both mistakes.
 
-I used Random Forest to classify a transaction held out of training. It marked the transaction **legitimate**, matching its known label. One successful prediction is useful as a demonstration, not proof that future decisions will always be correct.
+![Model comparison](../images/model_comparison.svg)
 
-## The takeaway
+*Figure 2. More fraud caught came with substantially more false alerts in this test.*
 
-Fraud detection is not about achieving the highest accuracy score. It is about balancing **missed fraud** against **unnecessary alerts**. Before banks could use either model, they would need further testing, appropriate alert thresholds, and human oversight.
+## What would happen with one new transaction?
 
-**The lesson: always ask what an accuracy score is hiding.**
+I asked Random Forest to score a transaction it had not seen during training. It classified the transaction as **legitimate**, matching the known label. That is one correct example, not a guarantee of future accuracy.
 
-*Source: [ULB/Worldline Credit Card Fraud Detection dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud). [Explore the analysis and code on GitHub](https://github.com/ayoawo123/credit-card-fraud-detection-ml).*
+## The real lesson
+
+**A high accuracy score does not automatically mean a good fraud detector.** Financial institutions must measure missed fraud, unnecessary alerts, and the costs of each, then validate their models before operational use.
+
+The next time you see a model boasting 99% accuracy, ask a better question: **What did it miss?**
+
+*Data: [ULB/Worldline Credit Card Fraud Detection dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud). [Explore my code and full CRISP-DM analysis on GitHub](https://github.com/ayoawo123/credit-card-fraud-detection-ml).*
