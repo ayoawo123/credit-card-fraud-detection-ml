@@ -1,36 +1,40 @@
-# Can Machine Learning Detect Credit Card Fraud? What 284,807 Transactions Reveal
+# The 99.83% Trap: When AI Accuracy Hides Credit Card Fraud
 
-Credit card fraud is difficult to detect because fraudulent transactions are rare. I analyzed a public dataset of **284,807 transactions** to examine whether machine learning can distinguish fraud from legitimate purchases—and what mistakes these models make.
+*What 284,807 transactions reveal about the danger of trusting accuracy alone.*
 
-![Original fraud distribution](../images/fraud_distribution.svg)
+Imagine a fraud detector boasting **99.83% accuracy**. Impressive? Not necessarily. In the dataset I studied, a system could achieve that score simply by labeling **every transaction legitimate**—and catching **zero fraud**.
 
-## How rare is credit card fraud?
+That is the 99.83% trap: a strong-looking number can hide a serious failure.
 
-Only **492 transactions (0.173%)** were labeled fraudulent. A system that called every transaction legitimate would appear almost 99.83% accurate while catching **zero fraud**. That is why I measured *recall* (the share of fraud caught) and *precision* (the share of alerts that were genuine), not just accuracy.
+![Fraud versus legitimate transactions](../images/fraud_distribution.svg)
 
-## What did the data reveal?
+## How much fraud was hiding in the data?
 
-The median transaction amount was **9.25 for fraud versus 22.00 for legitimate transactions**, in the dataset's unspecified currency units. Amount alone cannot reliably identify fraud. I also found **1,081 exact duplicate records**, which were removed before training. There were no missing values.
+Of **284,807 credit card transactions**, only **492 (0.173%)** were fraudulent—roughly one in every 579 purchases.
 
-## Which model performed better?
+My first step was to explore the data. I found **1,081 exact duplicate records**, which I removed, and no missing values. The median transaction amount was **9.25 for fraud versus 22.00 for legitimate purchases** (the dataset does not specify a currency). Transaction amount alone cannot reliably distinguish fraud.
 
-I compared two models using **56,746 transactions they had not seen during training**.
+## Could machine learning do better?
 
-| Model | Fraud caught (recall) | Alert precision | False alerts |
+I compared two models on **56,746 transactions excluded from their training**, including 95 fraud cases.
+
+| Model | Fraud cases found | Genuine alerts | False alerts |
 |---|---:|---:|---:|
-| Logistic Regression | 87.4% | 5.6% | 1,389 |
-| Random Forest | 72.6% | 97.2% | 2 |
+| Logistic Regression | 83 of 95 (87.4%) | 5.6% | 1,389 |
+| Random Forest | 69 of 95 (72.6%) | 97.2% | 2 |
 
-Logistic Regression detected **83 of 95** fraudulent transactions, but it generated many more false alarms. Random Forest detected **69 of 95**, missing more fraud yet producing far fewer false alerts. Random Forest also achieved higher average precision across thresholds (**0.808 versus 0.672**).
+The contrast was striking. Logistic Regression caught **14 more fraudulent transactions**, but also raised **1,387 more false alarms**. Random Forest produced far fewer mistaken alerts, yet missed **26 fraud cases**.
 
-![Measured model performance](../images/model_comparison.svg)
+![Model performance comparison](../images/model_comparison.svg)
 
-## What happens with a new transaction?
+## What about one new transaction?
 
-For a transaction held out from training, the Random Forest returned a **0.000 model score** and classified it as legitimate; the known label was legitimate. This illustrates a single prediction, **not** proof that future predictions will be correct.
+I used Random Forest to classify a transaction held out of training. It marked the transaction **legitimate**, matching its known label. One successful prediction is useful as a demonstration, not proof that future decisions will always be correct.
 
 ## The takeaway
 
-Fraud detection involves a tradeoff: catching more fraud can inconvenience more genuine customers. Banks would need to weigh missed losses against investigation costs before selecting a model and decision threshold. These findings come from one historical dataset and one test split; real deployment requires additional validation and human oversight.
+Fraud detection is not about achieving the highest accuracy score. It is about balancing **missed fraud** against **unnecessary alerts**. Before banks could use either model, they would need further testing, appropriate alert thresholds, and human oversight.
 
-*Source: ULB/Worldline credit card fraud dataset, distributed through Kaggle. [View the analysis on GitHub](https://github.com/ayoawo123/credit-card-fraud-detection-ml).*
+**The lesson: always ask what an accuracy score is hiding.**
+
+*Source: [ULB/Worldline Credit Card Fraud Detection dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud). [Explore the analysis and code on GitHub](https://github.com/ayoawo123/credit-card-fraud-detection-ml).*
